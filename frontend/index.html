@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PulseGuard - Hypertension Prediction</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #4facfe);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            animation: slideDown 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(255,255,255,0.3), 2px 2px 4px rgba(0,0,0,0.2);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .main-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            animation: scaleIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .form-header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 25px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .form-header h2 {
+            font-size: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-header p {
+            opacity: 0.9;
+            margin-top: 5px;
+            position: relative;
+            z-index: 1;
+        }
+
+        form {
+            padding: 30px;
+            animation: fadeIn 0.8s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .form-section {
+            margin-bottom: 25px;
+            animation: fadeInUp 0.8s ease backwards;
+        }
+
+        .form-section:nth-child(1) { animation-delay: 0.1s; }
+        .form-section:nth-child(2) { animation-delay: 0.2s; }
+        .form-section:nth-child(3) { animation-delay: 0.3s; }
+        .form-section:nth-child(4) { animation-delay: 0.4s; }
+        .form-section:nth-child(5) { animation-delay: 0.5s; }
+
+        .form-section h3 {
+            color: #333;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .form-section:hover h3 {
+            border-bottom-color: #764ba2;
+            transform: translateX(5px);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group:hover label {
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        select {
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            z-index: 1;
+        }
+
+        select:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+        }
+
+        select:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1), 0 5px 20px rgba(102, 126, 234, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-submit::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-submit:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-submit:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Results Section */
+        .results {
+            padding: 30px;
+            display: none;
+        }
+
+        .results.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .result-stage {
+            text-align: center;
+            padding: 40px 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-stage::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            animation: moveBackground 20s linear infinite;
+        }
+
+        @keyframes moveBackground {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(20px, 20px); }
+        }
+
+        .result-stage.normal {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+            box-shadow: 0 20px 60px rgba(86, 171, 47, 0.3);
+        }
+
+        .result-stage.stage1 {
+            background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
+            box-shadow: 0 20px 60px rgba(247, 151, 30, 0.3);
+            animation: pulse-warning 2s ease-in-out infinite;
+        }
+
+        .result-stage.stage2 {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            box-shadow: 0 20px 60px rgba(255, 65, 108, 0.3);
+            animation: pulse-danger 1.5s ease-in-out infinite;
+        }
+
+        .result-stage.crisis {
+            background: linear-gradient(135deg, #8b0000 0%, #ff0000 100%);
+            box-shadow: 0 20px 60px rgba(139, 0, 0, 0.3);
+            animation: pulse-critical 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse-warning {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        @keyframes pulse-danger {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        @keyframes pulse-critical {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.05); }
+            50% { transform: scale(1); }
+            75% { transform: scale(1.05); }
+        }
+
+        .result-stage h2 {
+            color: white;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
+            animation: slideDown 0.6s ease;
+        }
+
+        .result-stage .confidence {
+            color: white;
+            font-size: 1.2rem;
+            opacity: 0.95;
+            position: relative;
+            z-index: 2;
+        }
+
+        .confidence-bar {
+            width: 100%;
+            height: 12px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 6px;
+            margin-top: 15px;
+            overflow: hidden;
+            position: relative;
+            z-index: 2;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, white, rgba(255,255,255,0.9));
+            border-radius: 6px;
+            transition: width 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        .advice-section {
+            animation: fadeInUp 0.8s ease 0.4s both;
+        }
+
+        .advice-section h3 {
+            color: #333;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .advice-section h3:hover {
+            color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .advice-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .advice-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease backwards;
+        }
+
+        .advice-card:nth-child(1) { animation-delay: 0.5s; }
+        .advice-card:nth-child(2) { animation-delay: 0.6s; }
+        .advice-card:nth-child(3) { animation-delay: 0.7s; }
+        .advice-card:nth-child(4) { animation-delay: 0.8s; }
+
+        .advice-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .advice-card:hover::before {
+            left: 100%;
+        }
+
+        .advice-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+            border-left-color: #764ba2;
+        }
+
+        .advice-card p {
+            color: #555;
+            font-size: 0.95rem;
+            position: relative;
+            z-index: 1;
+            transition: color 0.3s ease;
+        }
+
+        .advice-card:hover p {
+            color: #333;
+        }
+
+        /* Error Message */
+        .error-message {
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            color: #c62828;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px;
+            text-align: center;
+            animation: shake 0.5s ease;
+            box-shadow: 0 4px 15px rgba(198, 40, 40, 0.2);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* Loading Spinner */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid rgba(102, 126, 234, 0.1);
+            border-top: 6px solid #667eea;
+            border-right: 6px solid #764ba2;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #667eea;
+            font-weight: 600;
+            font-size: 1.1rem;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            form, .results {
+                padding: 20px;
+            }
+
+            .result-stage {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🩺 PulseGuard</h1>
+            <p>Advanced Hypertension Risk Assessment</p>
+        </header>
+
+        <div class="main-card">
+            <div class="form-header">
+                <h2>Patient Information</h2>
+                <p>Please fill in all the details below for accurate prediction</p>
+            </div>
+
+            {% if error %}
+            <div class="error-message">
+                <p>{{ error }}</p>
+            </div>
+            {% endif %}
+
+            <div class="loading" id="loadingSpinner">
+                <div class="spinner"></div>
+                <p class="loading-text">Analyzing your data...</p>
+            </div>
+
+            {% if not prediction %}
+            <form id="predictionForm" action="/predict" method="POST">
+                <div class="form-section">
+                    <h3>👤 Basic Information</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="Gender">Gender</label>
+                            <select id="Gender" name="Gender" required>
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Age">Age Group</label>
+                            <select id="Age" name="Age" required>
+                                <option value="">Select Age</option>
+                                <option value="18-34">18-34 years</option>
+                                <option value="35-50">35-50 years</option>
+                                <option value="51-64">51-64 years</option>
+                                <option value="65+">65+ years</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>🏥 Medical History</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="History">Family History of Hypertension</label>
+                            <select id="History" name="History" required>
+                                <option value="">Select Option</option>
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Patient">Has Hypertension</label>
+                            <select id="Patient" name="Patient" required>
+                                <option value="">Select Option</option>
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="TakeMedication">Currently on Medication</label>
+                            <select id="TakeMedication" name="TakeMedication" required>
+                                <option value="">Select Option</option>
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="WhenDiagnosed">When Diagnosed</label>
+                            <select id="WhenDiagnosed" name="WhenDiagnosed" required>
+                                <option value="">Select Option</option>
+                                <option value="<1 Year"><1 Year</option>
+                                <option value="1 - 5 Years">1 - 5 Years</option>
+                                <option value=">5 Years">>5 Years</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="ControlledDiet">Controlled Diet</label>
+                            <select id="ControlledDiet" name="ControlledDiet" required>
+                                <option value="">Select Option</option>
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>🩹 Symptoms</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="Severity">Symptom Severity</label>
+                            <select id="Severity" name="Severity" required>
+                                <option value="">Select Severity</option>
+                                <option value="Mild">Mild</option>
+                                <option value="Moderate">Moderate</option>
+                                <option value="Severe">Severe</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="BreathShortness">Shortness of Breath</label>
+                            <select id="BreathShortness" name="BreathShortness" required>
+                                <option value="">Select Option</option>
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="VisualChanges">Visual Changes</label>
+                            <select id="VisualChanges" name="VisualChanges" required>
+                                <option value="">Select Option</option>
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="NoseBleeding">Nose Bleeding</label>
+                            <select id="NoseBleeding" name="NoseBleeding" required>
+                                <option value="">Select Option</option>
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>💉 Blood Pressure (mmHg)</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="Systolic">Systolic BP (Upper)</label>
+                            <select id="Systolic" name="Systolic" required>
+                                <option value="">Select Range</option>
+                                <option value="100 - 110">100 - 110</option>
+                                <option value="111 - 120">111 - 120</option>
+                                <option value="121 - 130">121 - 130</option>
+                                <option value="130+">130+</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Diastolic">Diastolic BP (Lower)</label>
+                            <select id="Diastolic" name="Diastolic" required>
+                                <option value="">Select Range</option>
+                                <option value="70 - 80">70 - 80</option>
+                                <option value="81 - 90">81 - 90</option>
+                                <option value="91 - 100">91 - 100</option>
+                                <option value="100+">100+</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    🔍 Analyze Risk
+                </button>
+            </form>
+            {% endif %}
+
+            <div class="results" id="results">
+                {% if prediction %}
+                <div class="result-stage" id="resultStage">
+                    <h2 id="predictionText">{{ prediction }}</h2>
+                    <p class="confidence">Confidence: <span id="confidenceText">{{ confidence }}</span>%</p>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" id="confidenceFill" style="width: {{ confidence }}%"></div>
+                    </div>
+                </div>
+                <div class="advice-section">
+                    <h3>📋 Recommended Actions</h3>
+                    <div class="advice-grid" id="adviceGrid">
+                        {% for item in advice %}
+                        <div class="advice-card">
+                            <p>{{ item }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Form submission with loading animation
+        document.getElementById('predictionForm')?.addEventListener('submit', function(e) {
+            const loader = document.getElementById('loadingSpinner');
+            if (loader) {
+                loader.classList.add('active');
+            }
+        });
+
+        // Show results on page load if there's a prediction
+        const prediction = '{{ prediction }}';
+        if (prediction && prediction !== '') {
+            const resultsDiv = document.getElementById('results');
+            if (resultsDiv) {
+                resultsDiv.classList.add('active');
+                
+                // Set the appropriate color class based on prediction
+                const resultStage = document.getElementById('resultStage');
+                if (prediction === 'Normal') {
+                    resultStage.classList.add('normal');
+                } else if (prediction === 'Stage 1 Hypertension') {
+                    resultStage.classList.add('stage1');
+                } else if (prediction === 'Stage 2 Hypertension') {
+                    resultStage.classList.add('stage2');
+                } else if (prediction === 'Hypertensive Crisis') {
+                    resultStage.classList.add('crisis');
+                }
+            }
+        }
+
+        // Smooth scroll on anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
