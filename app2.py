@@ -109,49 +109,49 @@ df['stages'] = df['stages'].map({
 
 # visualization (must be before encoding)
 
-#plt.figure(figsize=(6,4))
-#sns.countplot(data=df, x="gender", palette="Set2")
-#plt.title("Gender Distribution")
-#plt.show()
+plt.figure(figsize=(6,4))
+sns.countplot(data=df, x="gender", palette="Set2")
+plt.title("Gender Distribution")
+plt.show()
 
-#df["gender"].value_counts().plot.pie(
-#    autopct="%1.1f%%",
-#    figsize=(5,5)
-#)
-#plt.title("Gender Distribution (Pie Chart)")
-#plt.ylabel("")
-#plt.show()
+df["gender"].value_counts().plot.pie(
+    autopct="%1.1f%%",
+    figsize=(5,5)
+)
+plt.title("Gender Distribution (Pie Chart)")
+plt.ylabel("")
+plt.show()
 
 ##hypertension stages visualization 
-#plt.figure(figsize=(7,5))
-#sns.countplot(data=df, x="stages", palette="coolwarm")
-#plt.title("Hypertension Stages Distribution")
-#plt.xticks(rotation=30)
-#plt.show()
+plt.figure(figsize=(7,5))
+sns.countplot(data=df, x="stages", palette="coolwarm")
+plt.title("Hypertension Stages Distribution")
+plt.xticks(rotation=30)
+plt.show()
 
 ##take medications vs severity 
-#plt.figure(figsize=(7,5))
-#sns.countplot(
-#    data=df,
-#    x="takemedication",
-#    hue="severity",
-#    palette="Set1"
-#)
-#plt.title("TakeMedication vs Severity")
-#plt.show()
+plt.figure(figsize=(7,5))
+sns.countplot(
+    data=df,
+    x="takemedication",
+    hue="severity",
+    palette="Set1"
+)
+plt.title("TakeMedication vs Severity")
+plt.show()
 
 #age vs hypertension
 
-#plt.figure(figsize=(6,4))
-#sns.countplot(data=df, x="age", hue="stages",palette="husl")
-#plt.title("AGE VS HYPERTENSION")
-#plt.show()
+plt.figure(figsize=(6,4))
+sns.countplot(data=df, x="age", hue="stages",palette="husl")
+plt.title("AGE VS HYPERTENSION")
+plt.show()
 
 #systolic vs diastolic 
 
-#sns.pairplot(df[["systolic","diastolic", "stages"]], hue="stages", diag_kind="kde", palette="husl")
-#plt.suptitle("pairplot : systolic vs diastolic")
-#plt.show()
+sns.pairplot(df[["systolic","diastolic", "stages"]], hue="stages", diag_kind="kde", palette="husl")
+plt.suptitle("pairplot : systolic vs diastolic")
+plt.show()
 
 # model building 
 
